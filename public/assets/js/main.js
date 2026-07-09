@@ -55,7 +55,7 @@
             <div class="footer-contact__details">
               <img src="${rootPath}assets/images/crossleys-logo-light.png" alt="Crossleys" class="footer-logo">
               <h2 id="footer-contact-title">Get In Touch</h2>
-              <p>Available for all your catering needs, celebrations, Weddings, Christenings, Birthdays, Funerals, Conferences, Business Lunches. For affordable and quality catering services in Stockport or Cheshire, call Crossley's on <strong>0161 483 2727</strong> or email us at <a href="mailto:crossleyscatering@gmail.com">crossleyscatering@gmail.com</a>.</p>
+              <p>Available for all your catering needs, celebrations, Weddings, Christenings, Birthdays, Funerals, Conferences, Business Lunches. For affordable and quality catering services in Stockport or Cheshire, call Crossley's on <strong>0161 483 2727</strong> or email us at <a href="mailto:crossleyscatering@gmail.com" rel="nofollow">crossleyscatering@gmail.com</a>.</p>
             </div>
             ${includeFooterForm ? `
             <form class="contact-form" action="/api/enquiry" method="post" data-enquiry-form>
@@ -225,7 +225,7 @@
   const setupTurnstile = async () => {
     if(!enquiryForms.length) return;
     try{
-      const response = await fetch('/api/turnstile-config', { headers:{ accept:'application/json' } });
+      const response = await fetch('/api/form-config', { headers:{ accept:'application/json' } });
       if(!response.ok) return;
       const config = await response.json();
       if(!config.turnstileSiteKey) return;

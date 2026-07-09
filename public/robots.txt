@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 
+Disallow: /cdn-cgi/
 Disallow: /api/
 Disallow: /thank-you/
 Disallow: /404.html

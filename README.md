@@ -1,42 +1,98 @@
 # Crossleys Catering static rebuild
 
-This is a frontend-only rebuild of the WordPress/Elementor brochure site using HTML, CSS and JavaScript.
+Static HTML, CSS and JavaScript rebuild for Crossleys Catering, prepared for Cloudflare Pages.
 
-## Structure
+## Local development
 
-- `index.html`
-- `menu/index.html`
-- `catering-services/index.html`
-- `sandwich-shop/index.html`
-- `contact/index.html`
-- `privacy-policy/index.html`
-- `cookie-policy/index.html`
-- `terms-and-conditions/index.html`
-- `thank-you/index.html`
-- `404.html`
-- `_headers`
-- `_redirects`
-- `sitemap.xml`
-- `robots.txt`
-- `assets/css/styles.css`
-- `assets/js/main.js`
-- `functions/api/`
-- `assets/images/`
-- `assets/fonts/`
+```bash
+npm run dev
+```
 
-## Notes
+This runs `wrangler pages dev public`, which mirrors the Cloudflare Pages output directory and keeps Pages Functions available locally when `.dev.vars` is configured.
 
-- Header, footer and the repeated contact form are injected globally via `assets/js/main.js`.
-- The contact forms post to Cloudflare Pages Functions and require Brevo/Turnstile environment values before launch.
-- Policy pages are holding pages and need approved legal copy before launch.
-- Cookie consent gates the Google Map on the contact page until optional cookies are accepted.
-- Cloudflare Pages headers, redirects, sitemap, robots and a branded 404 page are included for go-live.
-- Only used assets were carried forward and large photography has been resized/exported as WebP.
-
-## Local preview
+For a quick static-only preview:
 
 ```bash
 python3 preview-server.py
 ```
 
 Then open `http://127.0.0.1:8010/`.
+
+## Checks and build
+
+```bash
+npm run check
+npm run build
+```
+
+`npm run build` intentionally runs the static site checks. There is no bundled frontend build step because this is a static site.
+
+## Cloudflare Pages settings
+
+- Framework preset: None
+- Build command: `npm run build`
+- Build output directory: `public`
+- Production branch: `main`
+- Preview branch: `staging`
+- Functions directory: `functions/`
+
+## Required Cloudflare variables
+
+Safe public/non-secret values:
+
+- `TURNSTILE_SITE_KEY`: `0x4AAAAAADykwq0AJPkW54c_`
+- `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
+- `ENQUIRY_NOTIFICATION_TO`: `crossleyscatering@gmail.com`
+- `ENQUIRY_SITE_NAME`: `Crossleys Catering`
+- `ENQUIRY_REPLY_TO_MODE`: `submitter`
+
+Required secrets:
+
+- `BREVO_API_KEY`
+- `TURNSTILE_SECRET_KEY`
+
+Do not commit real API keys, secret keys, `.dev.vars`, `.env`, `.wrangler/`, WordPress backups or `node_modules/`.
+
+## Included go-live files
+
+- `public/` static site output
+- `functions/api/enquiry.js`
+- `functions/api/form-config.js`
+- `public/thank-you/`
+- `public/_headers`
+- `public/_redirects`
+- `public/sitemap.xml`
+- `public/robots.txt`
+- `public/404.html`
+- `public/favicon.png`
+- `scripts/check-site.mjs`
+- `wrangler.jsonc`
+- `.dev.vars.example`
+
+## Form notes
+
+- Forms submit to `/api/enquiry`.
+- Safe public form config is served from `/api/form-config`.
+- Turnstile is rendered only when `TURNSTILE_SITE_KEY` is available.
+- Turnstile validation is server-side and requires `TURNSTILE_SECRET_KEY`.
+- Brevo delivery is server-side and requires `BREVO_API_KEY`.
+- Enquiry notifications are sent to `crossleyscatering@gmail.com`.
+
+## Handover note
+
+Client: Crossleys Catering
+Repository: `https://github.com/EncapsulateGroup/crossleys-catering-rebuild26`
+Cloudflare Pages project: `crossleys-catering-rebuild26`
+Staging URL: `https://crossleys-catering.pages.dev/`
+Production URL, if connected: `https://crossleyscatering.co.uk/`
+Live reference URL: `https://crossleyscatering.co.uk/`
+Branch currently ready for review: `staging`
+Forms included: General enquiry forms on the contact page and footer site-wide
+Notification recipient: `crossleyscatering@gmail.com`
+Brevo sender email: `no-reply@crossleyscatering.co.uk` must be verified in Brevo, or replaced with a verified sender
+Required Cloudflare variables: `TURNSTILE_SITE_KEY`, `BREVO_FROM_EMAIL`, `ENQUIRY_NOTIFICATION_TO`, `ENQUIRY_SITE_NAME`, `ENQUIRY_REPLY_TO_MODE`
+Required Cloudflare secrets: `BREVO_API_KEY`, `TURNSTILE_SECRET_KEY`
+Known issues / differences from live site: Policy pages are holding copy and need approved legal text before launch
+Favicon status: `public/favicon.png` generated from the site logo and linked from rendered pages
+Cloudflare /cdn-cgi crawler fix status: `public/robots.txt` includes `Disallow: /cdn-cgi/`; public `mailto:` links include `rel="nofollow"`
+Recommended next action: Deploy `staging` to Cloudflare Pages preview, add secrets, then test forms end to end

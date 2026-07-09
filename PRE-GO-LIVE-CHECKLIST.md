@@ -2,39 +2,56 @@
 
 ## Completed Prep
 
-- Baseline created from the static rebuild and `.gitignore` added for local/secrets files.
-- Cloudflare Pages configuration added in `wrangler.toml`.
-- Placeholder local secrets file added as `.dev.vars.example`.
+- Static output moved into `public/` for Cloudflare Pages.
+- Cloudflare Pages configuration updated in `wrangler.jsonc`.
+- `package.json` added so `npm run build` runs the local site checks.
+- Placeholder local secrets file updated as `.dev.vars.example`.
 - Enquiry forms wired to Cloudflare Pages Functions at `/api/enquiry`.
-- Brevo email delivery function added with environment-variable placeholders.
-- Cloudflare Turnstile config endpoint and frontend widget loading added.
-- Thank-you page added and marked `noindex`.
-- Cookie consent added with accept/reject controls and a persistent Cookie Settings button.
+- Safe public form config endpoint added at `/api/form-config`.
+- Brevo email delivery function updated to the current environment variable names.
+- Cloudflare Turnstile site key added as a public variable in `wrangler.jsonc`.
+- Enquiry notification recipient remains `crossleyscatering@gmail.com`.
+- Thank-you page is included and marked `noindex`.
+- Cookie consent is included with accept/reject controls and a persistent Cookie Settings button.
 - Google Maps embed is blocked until optional cookies are accepted.
 - Holding Privacy Policy, Cookie Policy and Terms & Conditions pages are in place.
-- `sitemap.xml` and `robots.txt` added for `https://crossleyscatering.co.uk/`.
-- Branded `404.html` added and marked `noindex`.
-- `_redirects` added for `www` to apex canonical redirect and legacy `/index.php`.
-- `_headers` added for security defaults, asset caching, and noindex/no-store rules.
+- `sitemap.xml` and `robots.txt` are included in `public/` for `https://crossleyscatering.co.uk/`.
+- `robots.txt` includes `Disallow: /cdn-cgi/`.
+- Public `mailto:` links include `rel="nofollow"`.
+- Branded `404.html` is included and marked `noindex`.
+- `_redirects` is included for `www` to apex canonical redirect and legacy `/index.php`.
+- `_headers` is included for security defaults, asset caching, preview noindex and noindex/no-store rules.
+- `public/favicon.png` is generated from the site logo and linked from rendered HTML pages.
 
-## Local Checks Completed
+## Local Checks To Run
 
-- Sitemap validates as XML.
-- Redirect destinations validate.
-- `_headers` format validates.
-- Local link and asset crawl reports `missing local refs: 0`.
-- JavaScript syntax checks pass for `assets/js/main.js`.
-- Pages Function syntax checks pass for `functions/api/enquiry.js` and `functions/api/turnstile-config.js`.
-- Wrangler reported `Compiled Worker successfully`; local log writing was blocked by the sandbox path outside the workspace.
+```bash
+git diff --check
+npm run build
+node --check functions/api/enquiry.js
+node --check functions/api/form-config.js
+node --check public/assets/js/main.js
+python3 - <<'PY'
+import xml.etree.ElementTree as ET
+ET.parse('public/sitemap.xml')
+print('sitemap: valid xml')
+PY
+```
+
+If Wrangler is installed:
+
+```bash
+wrangler pages functions build functions --outdir /tmp/crossleys-functions-check --compatibility-date 2026-05-25
+```
 
 ## Deployment-Only Tasks
 
 - Add real `BREVO_API_KEY` as a Cloudflare Pages secret.
 - Add real `TURNSTILE_SECRET_KEY` as a Cloudflare Pages secret.
-- Add real `TURNSTILE_SITE_KEY` as a Cloudflare Pages environment variable.
-- Replace `BREVO_SENDER_EMAIL` with a Brevo-verified sender email.
+- Confirm `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADykwq0AJPkW54c_`.
+- Confirm `BREVO_FROM_EMAIL` is a Brevo-verified sender, or replace it with one.
 - Configure Turnstile allowed domains for `crossleyscatering.co.uk` and any preview domains.
-- Deploy to Cloudflare Pages preview and test forms end to end.
+- Deploy `staging` to Cloudflare Pages preview and test forms end to end.
 - Confirm Brevo email delivery lands in `crossleyscatering@gmail.com`.
 - Test cookie consent and Google Maps loading on Cloudflare preview.
 - Test redirects and the custom 404 page on Cloudflare preview.

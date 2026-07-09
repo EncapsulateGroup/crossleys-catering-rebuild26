@@ -93,7 +93,7 @@ function validateRequired(fields) {
   return null;
 }
 
-function emailHtml(fields) {
+function emailHtml(fields, siteName) {
   const rows = [
     ['Name', `${fields.name} ${fields.surname}`.trim()],
     ['Email', fields.email],
@@ -106,7 +106,7 @@ function emailHtml(fields) {
     ['Page URL', fields.page_url]
   ].filter(([, value]) => value);
   return `
-    <h1>New Crossleys enquiry</h1>
+    <h1>New ${escapeHtml(siteName)} enquiry</h1>
     <table cellpadding="8" cellspacing="0" border="0">
       ${rows.map(([label, value]) => `
         <tr>
@@ -122,9 +122,18 @@ async function sendBrevoEmail(fields, env) {
   if(!env.BREVO_API_KEY){
     return { ok:false, message:'Email delivery is not configured yet.' };
   }
-  const senderEmail = env.BREVO_SENDER_EMAIL || 'your-verified-sender@example.com';
-  const senderName = env.BREVO_SENDER_NAME || 'Crossleys Catering';
-  const recipient = env.ENQUIRY_NOTIFICATION_EMAIL || 'crossleyscatering@gmail.com';
+  const siteName = env.ENQUIRY_SITE_NAME || 'Crossleys Catering';
+  const senderEmail = env.BREVO_FROM_EMAIL || 'no-reply@crossleyscatering.co.uk';
+  const recipient = env.ENQUIRY_NOTIFICATION_TO || 'crossleyscatering@gmail.com';
+  const message = {
+    sender: { email: senderEmail, name: siteName },
+    to: [{ email: recipient }],
+    subject: `New ${siteName} enquiry from ${fields.name}`,
+    htmlContent: emailHtml(fields, siteName)
+  };
+  if((env.ENQUIRY_REPLY_TO_MODE || 'submitter') === 'submitter' && fields.email){
+    message.replyTo = { email: fields.email, name: `${fields.name} ${fields.surname}`.trim() || fields.email };
+  }
   const response = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
@@ -132,13 +141,7 @@ async function sendBrevoEmail(fields, env) {
       'api-key': env.BREVO_API_KEY,
       'content-type': 'application/json'
     },
-    body: JSON.stringify({
-      sender: { email: senderEmail, name: senderName },
-      to: [{ email: recipient }],
-      replyTo: { email: fields.email, name: `${fields.name} ${fields.surname}`.trim() || fields.email },
-      subject: `New website enquiry from ${fields.name}`,
-      htmlContent: emailHtml(fields)
-    })
+    body: JSON.stringify(message)
   });
   if(!response.ok){
     return { ok:false, message:'The enquiry could not be sent. Please call or email us instead.' };

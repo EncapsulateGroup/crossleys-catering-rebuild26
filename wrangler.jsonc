@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "crossleys-catering-rebuild26",
+  "compatibility_date": "2026-05-25",
+  "pages_build_output_dir": "public",
+  "vars": {
+    "ENQUIRY_SITE_NAME": "Crossleys Catering",
+    "ENQUIRY_NOTIFICATION_TO": "crossleyscatering@gmail.com",
+    "BREVO_FROM_EMAIL": "no-reply@crossleyscatering.co.uk",
+    "ENQUIRY_REPLY_TO_MODE": "submitter",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAADykwq0AJPkW54c_"
+  }
+}
