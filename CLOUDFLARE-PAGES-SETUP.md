@@ -31,10 +31,12 @@ Set these as encrypted Cloudflare Pages secrets, not committed files.
 
 ## Preview And Production
 
-Configure the complete set of normal variables and encrypted secrets separately for both Cloudflare environments.
+Production keeps the complete set of normal variables and encrypted secrets.
 
-- Preview may use Cloudflare's universal Turnstile test credentials.
-- Production must use the live Turnstile widget credentials.
+- Preview keeps `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` and `BREVO_API_KEY` only while end-to-end Preview form testing is required.
+- During testing, authorise `crossleys-catering.pages.dev` in the Turnstile widget; this also covers its staging and deployment subdomains.
+- At go-live, authorise `crossleyscatering.co.uk`, confirm the live form, then remove `crossleys-catering.pages.dev` if its widget capacity is needed elsewhere.
+- After live sign-off, remove the three Preview values above when Preview submissions are no longer needed.
 - Keep preview notification routing clearly distinguishable from production where practical.
 - Redeploy Preview or Production after changing its configuration.
 - Do not add a deployment `wrangler.jsonc` while the dashboard is the configuration source of truth.
@@ -87,10 +89,11 @@ Then open `http://127.0.0.1:8010/`.
 
 Before launch, the deployment developer should:
 
-- Confirm all normal form variables exist in both Cloudflare Preview and Production.
-- Confirm `BREVO_API_KEY` and `TURNSTILE_SECRET_KEY` are encrypted secrets in both environments.
+- Confirm all normal form variables and encrypted secrets exist in Cloudflare Production.
+- Keep Turnstile and Brevo values in Preview only while Preview form testing is required.
 - Confirm the Brevo sender email is verified, or replace `BREVO_FROM_EMAIL` in Cloudflare with a verified sender.
-- Configure Turnstile allowed domains for `crossleyscatering.co.uk` and preview domains.
+- Configure `crossleys-catering.pages.dev` during Preview testing and `crossleyscatering.co.uk` for live use.
+- After live sign-off, remove the `pages.dev` hostname and the Preview Turnstile/Brevo delivery values if Preview submissions are no longer required.
 - Confirm the Cloudflare zone redirects `www.crossleyscatering.co.uk` to the apex domain while preserving the path and query string.
 - Redeploy each affected environment after its configuration changes.
 - Deploy a Cloudflare Pages preview from `staging`.

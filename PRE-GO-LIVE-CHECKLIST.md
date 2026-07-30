@@ -47,11 +47,12 @@ wrangler pages functions build functions --outdir /tmp/crossleys-functions-check
 
 ## Deployment-Only Tasks
 
-- Add all required normal form variables separately to Cloudflare Preview and Production.
-- Add `BREVO_API_KEY` and `TURNSTILE_SECRET_KEY` as encrypted secrets in both environments.
-- Confirm Production `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADPM-GErWOrsbJ5V`; Preview may use Cloudflare's universal test credentials.
+- Add the complete set of normal form variables and encrypted secrets to Cloudflare Production.
+- Keep `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` and `BREVO_API_KEY` in Preview only while Preview form testing is required.
+- During testing, authorise `crossleys-catering.pages.dev` in the Turnstile widget.
+- Confirm Production `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADPM-GErWOrsbJ5V`.
 - Confirm `BREVO_FROM_EMAIL` is a Brevo-verified sender, or replace it in Cloudflare with one.
-- Configure Turnstile allowed domains for `crossleyscatering.co.uk` and any preview domains.
+- Authorise `crossleyscatering.co.uk` for live use, confirm the live form, then remove `crossleys-catering.pages.dev` and the three Preview values above after sign-off if Preview submissions are no longer required.
 - Confirm the Cloudflare zone redirects `www.crossleyscatering.co.uk` to the apex domain while preserving the path and query string.
 - Redeploy each environment after adding or changing its variables or secrets.
 - Deploy `staging` to Cloudflare Pages preview and test forms end to end.

@@ -38,7 +38,7 @@ npm run build
 
 ## Required Cloudflare variables
 
-This Git-connected Pages project intentionally has no deployment `wrangler.jsonc`, so the Cloudflare dashboard remains the source of truth. Add the following normal variables directly in Cloudflare Pages under **Settings → Variables and Secrets** for both Preview and Production:
+This Git-connected Pages project intentionally has no deployment `wrangler.jsonc`, so the Cloudflare dashboard remains the source of truth. Add the following normal variables directly in Cloudflare Pages under **Settings → Variables and Secrets**:
 
 - `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
@@ -46,12 +46,12 @@ This Git-connected Pages project intentionally has no deployment `wrangler.jsonc
 - `ENQUIRY_SITE_NAME`: `Crossleys Catering`
 - `ENQUIRY_REPLY_TO_MODE`: `submitter`
 
-Add the following as encrypted secrets in both environments:
+Add the following as encrypted secrets:
 
 - `BREVO_API_KEY`
 - `TURNSTILE_SECRET_KEY`
 
-Preview may use Cloudflare's universal Turnstile test credentials. Production must use the live widget credentials. Redeploy the relevant environment after adding or changing any value.
+Production keeps the complete set. Preview keeps `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` and `BREVO_API_KEY` only while Preview form testing is required. During testing, authorise `crossleys-catering.pages.dev` in the Turnstile widget; it covers the staging and deployment subdomains. After live sign-off, remove that hostname and the three Preview values if Preview submissions are no longer needed, then redeploy Preview.
 
 Do not commit real API keys, secret keys, `.dev.vars`, `.env`, `.wrangler/`, WordPress backups or `node_modules/`.
 
