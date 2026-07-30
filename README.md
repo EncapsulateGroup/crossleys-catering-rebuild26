@@ -40,7 +40,7 @@ npm run build
 
 Safe public/non-secret values:
 
-- `TURNSTILE_SITE_KEY`: `0x4AAAAAADykwq0AJPkW54c_`
+- `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
 - `ENQUIRY_NOTIFICATION_TO`: `crossleyscatering@gmail.com`
 - `ENQUIRY_SITE_NAME`: `Crossleys Catering`

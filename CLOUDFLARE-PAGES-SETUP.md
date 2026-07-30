@@ -16,7 +16,7 @@ This site is prepared for Cloudflare Pages using the current Encapsulate static-
 
 These are safe to store as Cloudflare Pages environment variables and are mirrored in `wrangler.jsonc` for local/reference use.
 
-- `TURNSTILE_SITE_KEY`: `0x4AAAAAADykwq0AJPkW54c_`
+- `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
 - `ENQUIRY_NOTIFICATION_TO`: `crossleyscatering@gmail.com`
 - `ENQUIRY_SITE_NAME`: `Crossleys Catering`

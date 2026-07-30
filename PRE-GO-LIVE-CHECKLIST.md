@@ -48,7 +48,7 @@ wrangler pages functions build functions --outdir /tmp/crossleys-functions-check
 
 - Add real `BREVO_API_KEY` as a Cloudflare Pages secret.
 - Add real `TURNSTILE_SECRET_KEY` as a Cloudflare Pages secret.
-- Confirm `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADykwq0AJPkW54c_`.
+- Confirm `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADPM-GErWOrsbJ5V`.
 - Confirm `BREVO_FROM_EMAIL` is a Brevo-verified sender, or replace it with one.
 - Configure Turnstile allowed domains for `crossleyscatering.co.uk` and any preview domains.
 - Deploy `staging` to Cloudflare Pages preview and test forms end to end.
