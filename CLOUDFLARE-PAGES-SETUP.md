@@ -14,9 +14,7 @@ This site is prepared for Cloudflare Pages using the current Encapsulate static-
 
 ## Normal Variables
 
-Add these directly in Cloudflare Pages under **Settings → Variables and Secrets**. They are intentionally not stored in `wrangler.jsonc`.
-
-`wrangler.jsonc` sets `keep_vars: true` so Wrangler-driven deployments preserve these dashboard-managed values.
+Add these directly in Cloudflare Pages under **Settings → Variables and Secrets**. This Git-connected Pages project intentionally has no deployment `wrangler.jsonc`, so the dashboard remains the source of truth.
 
 - `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
@@ -39,7 +37,7 @@ Configure the complete set of normal variables and encrypted secrets separately 
 - Production must use the live Turnstile widget credentials.
 - Keep preview notification routing clearly distinguishable from production where practical.
 - Redeploy Preview or Production after changing its configuration.
-- Do not add these deployed values back to `wrangler.jsonc`.
+- Do not add a deployment `wrangler.jsonc` while the dashboard is the configuration source of truth.
 
 ## Local Testing Notes
 
@@ -59,7 +57,6 @@ Then open `http://127.0.0.1:8010/`.
 
 ## Included Cloudflare Files
 
-- `wrangler.jsonc`
 - `.dev.vars.example`
 - `functions/`
 - `public/thank-you/`

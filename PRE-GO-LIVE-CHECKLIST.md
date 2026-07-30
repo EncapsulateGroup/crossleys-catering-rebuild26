@@ -3,13 +3,13 @@
 ## Completed Prep
 
 - Static output moved into `public/` for Cloudflare Pages.
-- Cloudflare Pages configuration updated in `wrangler.jsonc`.
+- Cloudflare Pages build output and runtime configuration are managed in the dashboard.
 - `package.json` added so `npm run build` runs the local site checks.
 - Placeholder local secrets file updated as `.dev.vars.example`.
 - Enquiry forms wired to Cloudflare Pages Functions at `/api/enquiry`.
 - Safe public form config endpoint added at `/api/form-config`.
 - Brevo email delivery function updated to the current environment variable names.
-- `wrangler.jsonc` contains project/runtime settings only and sets `keep_vars: true`; deployed form configuration is managed in Cloudflare.
+- No deployment `wrangler.jsonc` is committed, so dashboard-managed Pages variables remain authoritative.
 - Enquiry notification recipient remains `crossleyscatering@gmail.com`.
 - Thank-you page is included and marked `noindex`.
 - Cookie consent is included with accept/reject controls and a persistent Cookie Settings button.

@@ -38,7 +38,7 @@ npm run build
 
 ## Required Cloudflare variables
 
-Wrangler contains project/runtime settings only and sets `keep_vars: true` so deployments preserve dashboard-managed variables. Add the following normal variables directly in Cloudflare Pages under **Settings → Variables and Secrets** for both Preview and Production:
+This Git-connected Pages project intentionally has no deployment `wrangler.jsonc`, so the Cloudflare dashboard remains the source of truth. Add the following normal variables directly in Cloudflare Pages under **Settings → Variables and Secrets** for both Preview and Production:
 
 - `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
@@ -68,7 +68,6 @@ Do not commit real API keys, secret keys, `.dev.vars`, `.env`, `.wrangler/`, Wor
 - `public/404.html`
 - `public/favicon.png`
 - `scripts/check-site.mjs`
-- `wrangler.jsonc`
 - `.dev.vars.example`
 
 ## Form notes
