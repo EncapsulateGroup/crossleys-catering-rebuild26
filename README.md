@@ -38,7 +38,7 @@ npm run build
 
 ## Required Cloudflare variables
 
-Safe public/non-secret values:
+Wrangler contains project/runtime settings only and sets `keep_vars: true` so deployments preserve dashboard-managed variables. Add the following normal variables directly in Cloudflare Pages under **Settings → Variables and Secrets** for both Preview and Production:
 
 - `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
@@ -46,10 +46,12 @@ Safe public/non-secret values:
 - `ENQUIRY_SITE_NAME`: `Crossleys Catering`
 - `ENQUIRY_REPLY_TO_MODE`: `submitter`
 
-Required secrets:
+Add the following as encrypted secrets in both environments:
 
 - `BREVO_API_KEY`
 - `TURNSTILE_SECRET_KEY`
+
+Preview may use Cloudflare's universal Turnstile test credentials. Production must use the live widget credentials. Redeploy the relevant environment after adding or changing any value.
 
 Do not commit real API keys, secret keys, `.dev.vars`, `.env`, `.wrangler/`, WordPress backups or `node_modules/`.
 
@@ -82,7 +84,7 @@ Do not commit real API keys, secret keys, `.dev.vars`, `.env`, `.wrangler/`, Wor
 
 Client: Crossleys Catering
 Repository: `https://github.com/EncapsulateGroup/crossleys-catering-rebuild26`
-Cloudflare Pages project: `crossleys-catering-rebuild26`
+Cloudflare Pages project: `crossleys-catering`
 Staging URL: `https://crossleys-catering.pages.dev/`
 Production URL, if connected: `https://crossleyscatering.co.uk/`
 Live reference URL: `https://crossleyscatering.co.uk/`
@@ -95,4 +97,4 @@ Required Cloudflare secrets: `BREVO_API_KEY`, `TURNSTILE_SECRET_KEY`
 Known issues / differences from live site: Policy pages are holding copy and need approved legal text before launch
 Favicon status: `public/favicon.png` generated from the site logo and linked from rendered pages
 Cloudflare /cdn-cgi crawler fix status: `public/robots.txt` includes `Disallow: /cdn-cgi/`; public `mailto:` links include `rel="nofollow"`
-Recommended next action: Deploy `staging` to Cloudflare Pages preview, add secrets, then test forms end to end
+Recommended next action: Confirm all normal variables and encrypted secrets in Cloudflare Preview and Production, redeploy, then test forms end to end

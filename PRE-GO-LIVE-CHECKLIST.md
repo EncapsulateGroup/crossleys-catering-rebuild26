@@ -9,7 +9,7 @@
 - Enquiry forms wired to Cloudflare Pages Functions at `/api/enquiry`.
 - Safe public form config endpoint added at `/api/form-config`.
 - Brevo email delivery function updated to the current environment variable names.
-- Cloudflare Turnstile site key added as a public variable in `wrangler.jsonc`.
+- `wrangler.jsonc` contains project/runtime settings only and sets `keep_vars: true`; deployed form configuration is managed in Cloudflare.
 - Enquiry notification recipient remains `crossleyscatering@gmail.com`.
 - Thank-you page is included and marked `noindex`.
 - Cookie consent is included with accept/reject controls and a persistent Cookie Settings button.
@@ -19,7 +19,8 @@
 - `robots.txt` includes `Disallow: /cdn-cgi/`.
 - Public `mailto:` links include `rel="nofollow"`.
 - Branded `404.html` is included and marked `noindex`.
-- `_redirects` is included for `www` to apex canonical redirect and legacy `/index.php`.
+- `_redirects` includes the legacy `/index.php` redirect.
+- The `www` to apex canonical redirect is a Cloudflare zone Redirect Rule because Pages `_redirects` accepts relative paths only.
 - `_headers` is included for security defaults, asset caching, preview noindex and noindex/no-store rules.
 - `public/favicon.png` is generated from the site logo and linked from rendered HTML pages.
 
@@ -46,11 +47,13 @@ wrangler pages functions build functions --outdir /tmp/crossleys-functions-check
 
 ## Deployment-Only Tasks
 
-- Add real `BREVO_API_KEY` as a Cloudflare Pages secret.
-- Add real `TURNSTILE_SECRET_KEY` as a Cloudflare Pages secret.
-- Confirm `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADPM-GErWOrsbJ5V`.
-- Confirm `BREVO_FROM_EMAIL` is a Brevo-verified sender, or replace it with one.
+- Add all required normal form variables separately to Cloudflare Preview and Production.
+- Add `BREVO_API_KEY` and `TURNSTILE_SECRET_KEY` as encrypted secrets in both environments.
+- Confirm Production `TURNSTILE_SITE_KEY` is set to `0x4AAAAAADPM-GErWOrsbJ5V`; Preview may use Cloudflare's universal test credentials.
+- Confirm `BREVO_FROM_EMAIL` is a Brevo-verified sender, or replace it in Cloudflare with one.
 - Configure Turnstile allowed domains for `crossleyscatering.co.uk` and any preview domains.
+- Confirm the Cloudflare zone redirects `www.crossleyscatering.co.uk` to the apex domain while preserving the path and query string.
+- Redeploy each environment after adding or changing its variables or secrets.
 - Deploy `staging` to Cloudflare Pages preview and test forms end to end.
 - Confirm Brevo email delivery lands in `crossleyscatering@gmail.com`.
 - Test cookie consent and Google Maps loading on Cloudflare preview.

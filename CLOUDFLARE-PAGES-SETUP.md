@@ -4,7 +4,7 @@ This site is prepared for Cloudflare Pages using the current Encapsulate static-
 
 ## Project
 
-- Cloudflare Pages project name: `crossleys-catering-rebuild26`
+- Cloudflare Pages project name: `crossleys-catering`
 - Repository: `EncapsulateGroup/crossleys-catering-rebuild26`
 - Production domain: `https://crossleyscatering.co.uk/`
 - Preview hostname: `https://crossleys-catering.pages.dev/`
@@ -12,9 +12,11 @@ This site is prepared for Cloudflare Pages using the current Encapsulate static-
 - Build output directory: `public`
 - Functions directory: `functions/`
 
-## Public Variables
+## Normal Variables
 
-These are safe to store as Cloudflare Pages environment variables and are mirrored in `wrangler.jsonc` for local/reference use.
+Add these directly in Cloudflare Pages under **Settings → Variables and Secrets**. They are intentionally not stored in `wrangler.jsonc`.
+
+`wrangler.jsonc` sets `keep_vars: true` so Wrangler-driven deployments preserve these dashboard-managed values.
 
 - `TURNSTILE_SITE_KEY`: `0x4AAAAAADPM-GErWOrsbJ5V`
 - `BREVO_FROM_EMAIL`: `no-reply@crossleyscatering.co.uk`
@@ -22,12 +24,22 @@ These are safe to store as Cloudflare Pages environment variables and are mirror
 - `ENQUIRY_SITE_NAME`: `Crossleys Catering`
 - `ENQUIRY_REPLY_TO_MODE`: `submitter`
 
-## Secret Variables
+## Encrypted Secrets
 
-Set these as Cloudflare Pages secrets, not committed files.
+Set these as encrypted Cloudflare Pages secrets, not committed files.
 
 - `BREVO_API_KEY`
 - `TURNSTILE_SECRET_KEY`
+
+## Preview And Production
+
+Configure the complete set of normal variables and encrypted secrets separately for both Cloudflare environments.
+
+- Preview may use Cloudflare's universal Turnstile test credentials.
+- Production must use the live Turnstile widget credentials.
+- Keep preview notification routing clearly distinguishable from production where practical.
+- Redeploy Preview or Production after changing its configuration.
+- Do not add these deployed values back to `wrangler.jsonc`.
 
 ## Local Testing Notes
 
@@ -69,7 +81,8 @@ Then open `http://127.0.0.1:8010/`.
 - `sitemap.xml` and `robots.txt` use `https://crossleyscatering.co.uk/`.
 - `robots.txt` includes the scoped `/cdn-cgi/` crawler fix.
 - Public `mailto:` links include `rel="nofollow"`.
-- `_redirects` keeps the apex domain canonical and redirects legacy `/index.php` to home.
+- `_redirects` redirects legacy `/index.php` to home.
+- The `www` to apex canonical redirect must be configured as a Cloudflare zone Redirect Rule because Pages `_redirects` accepts relative paths only.
 - `_headers` adds conservative security headers, asset caching, noindex/no-store rules and a noindex rule for the Pages preview hostname only.
 - `404.html` is a branded noindex page for Cloudflare Pages.
 
@@ -77,10 +90,12 @@ Then open `http://127.0.0.1:8010/`.
 
 Before launch, the deployment developer should:
 
-- Add the real Brevo API key in Cloudflare.
-- Add the real Turnstile secret key in Cloudflare.
-- Confirm the Brevo sender email is verified, or replace `BREVO_FROM_EMAIL` with a verified sender.
+- Confirm all normal form variables exist in both Cloudflare Preview and Production.
+- Confirm `BREVO_API_KEY` and `TURNSTILE_SECRET_KEY` are encrypted secrets in both environments.
+- Confirm the Brevo sender email is verified, or replace `BREVO_FROM_EMAIL` in Cloudflare with a verified sender.
 - Configure Turnstile allowed domains for `crossleyscatering.co.uk` and preview domains.
+- Confirm the Cloudflare zone redirects `www.crossleyscatering.co.uk` to the apex domain while preserving the path and query string.
+- Redeploy each affected environment after its configuration changes.
 - Deploy a Cloudflare Pages preview from `staging`.
 - Test form submissions end to end.
 - Confirm Brevo email delivery lands in `crossleyscatering@gmail.com`.
