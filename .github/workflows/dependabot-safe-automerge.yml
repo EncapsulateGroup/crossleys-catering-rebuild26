@@ -1,0 +1,102 @@
+name: Dependabot safe auto-merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  classify-and-automerge:
+    name: Classify Dependabot update
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Read Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2.4.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Decide whether this is safe
+        id: decision
+        shell: bash
+        env:
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+          DEPENDENCY_TYPE: ${{ steps.metadata.outputs.dependency-type }}
+          PACKAGE_ECOSYSTEM: ${{ steps.metadata.outputs.package-ecosystem }}
+        run: |
+          safe=false
+          reason="Manual review required: update type '${UPDATE_TYPE:-unknown}' in ecosystem '${PACKAGE_ECOSYSTEM:-unknown}'."
+
+          case "$UPDATE_TYPE" in
+            version-update:semver-patch|version-update:semver-minor)
+              safe=true
+              reason="Low-risk Dependabot ${UPDATE_TYPE#version-update:} update."
+              ;;
+            version-update:semver-major)
+              reason="Major version update requires human review."
+              ;;
+            *)
+              reason="Unknown or non-semver Dependabot update requires human review."
+              ;;
+          esac
+
+          if [ "$PACKAGE_ECOSYSTEM" = "github-actions" ]; then
+            safe=false
+            reason="GitHub Actions workflow dependency update requires human review."
+          fi
+
+          echo "safe=$safe" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "dependency_type=${DEPENDENCY_TYPE:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "package_ecosystem=${PACKAGE_ECOSYSTEM:-unknown}" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "dependabot:auto-safe" --color "0E8A16" --description "Safe Dependabot update approved for auto-merge" || true
+          gh label create "dependabot:needs-review" --color "D93F0B" --description "Dependabot update needs human review" || true
+
+      - name: Mark safe Dependabot update
+        if: steps.decision.outputs.safe == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REASON: ${{ steps.decision.outputs.reason }}
+        run: |
+          gh pr edit "$PR_URL" --add-label "dependabot:auto-safe"
+          gh pr edit "$PR_URL" --remove-label "dependabot:needs-review" || true
+          gh pr review "$PR_URL" --approve --body "$REASON"
+          gh pr merge "$PR_URL" --auto --squash
+
+      - name: Flag Dependabot update for human review
+        if: steps.decision.outputs.safe != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REASON: ${{ steps.decision.outputs.reason }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+          DEPENDENCY_TYPE: ${{ steps.decision.outputs.dependency_type }}
+          PACKAGE_ECOSYSTEM: ${{ steps.decision.outputs.package_ecosystem }}
+        run: |
+          gh pr edit "$PR_URL" --add-label "dependabot:needs-review"
+          gh pr edit "$PR_URL" --remove-label "dependabot:auto-safe" || true
+          gh pr comment "$PR_URL" --body "Dependabot update held for human review.
+
+Reason: ${REASON}
+Update type: ${UPDATE_TYPE:-unknown}
+Dependency type: ${DEPENDENCY_TYPE:-unknown}
+Package ecosystem: ${PACKAGE_ECOSYSTEM:-unknown}"
